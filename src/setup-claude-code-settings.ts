@@ -1,5 +1,6 @@
 import { $ } from "bun";
 import { homedir } from "os";
+import { join } from "path";
 
 export function getClaudeConfigHomeDir(): string {
   if (process.env.XDG_CONFIG_HOME) {
