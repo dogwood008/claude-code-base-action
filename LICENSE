@@ -2,6 +2,11 @@ MIT License
 
 Copyright (c) 2025 Anthropic, PBC
 
+- Modified by [grll](https://github.com/grll/claude-code-action) [code](https://github.com/dogwood008/claude-code-base-action/commit/6b1ad2cf406d2987a4e7316926fd4ec6e42f908a)
+- Modified by [Akira-Papa](https://github.com/Akira-Papa/claude-code-base-action) [code](https://github.com/dogwood008/claude-code-base-action/commit/b0458d68bc973480c98db34d7519669d76ac2fd5)
+- Modified by [dogwood008](https://github.com/Akira-Papa/claude-code-base-action)
+
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
