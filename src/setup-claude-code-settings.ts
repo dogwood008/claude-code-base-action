@@ -3,9 +3,10 @@ import { homedir } from "os";
 import { join } from "path";
 
 export function getClaudeConfigHomeDir(): string {
-  if (process.env.XDG_CONFIG_HOME) {
-    return join(process.env.XDG_CONFIG_HOME, "claude");
-  }
+  // BUG: https://github.com/anthropics/claude-code/issues/1455
+  // if (process.env.XDG_CONFIG_HOME) {
+  //   return join(process.env.XDG_CONFIG_HOME, "claude");
+  // }
   return join(homedir(), ".claude");
 }
 export async function setupClaudeCodeSettings() {
