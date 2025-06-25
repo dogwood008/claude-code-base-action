@@ -101,6 +101,11 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Set Claude Code Version
+      shell: bash
+      run: |
+        echo "CLAUDE_CODE_VERSION=1.0.34" >> $GITHUB_ENV
+    
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # https://github.com/actions/setup-node/releases/tag/v4.4.0
       with:
@@ -133,8 +138,7 @@ runs:
         npm cache clean --force 2>/dev/null || true
         
         # forceオプション付きでインストール
-        npm install -g @anthropic-ai/claude-code@1.0.2 --force
-
+        npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} --force
 
     - name: Run Claude Code Action
       shell: bash
