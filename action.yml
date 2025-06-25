@@ -1,5 +1,5 @@
-name: "Claude Code Base Action"
-description: "Run Claude Code in GitHub Actions workflows"
+name: "Claude Max Code Base Action"
+description: "Run Claude Code in GitHub Actions workflows with your Claude Max subscription."
 branding:
   icon: "code"
   color: "orange"
@@ -68,6 +68,22 @@ inputs:
     description: "Use Google Vertex AI with OIDC authentication instead of direct Anthropic API"
     required: false
     default: "false"
+  use_oauth:
+    description: "Use Claude AI OAuth authentication instead of API key"
+    required: false
+    default: "false"
+  claude_access_token:
+    description: "Claude AI OAuth access token (required when use_oauth is true)"
+    required: false
+    default: ""
+  claude_refresh_token:
+    description: "Claude AI OAuth refresh token (required when use_oauth is true)"
+    required: false
+    default: ""
+  claude_expires_at:
+    description: "Claude AI OAuth token expiration timestamp (required when use_oauth is true)"
+    required: false
+    default: ""
 
   use_node_cache:
     description: "Whether to use Node.js dependency caching (set to true only for Node.js projects with lock files)"
@@ -85,6 +101,11 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Set Claude Code Version
+      shell: bash
+      run: |
+        echo "CLAUDE_CODE_VERSION=1.0.34" >> $GITHUB_ENV
+    
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # https://github.com/actions/setup-node/releases/tag/v4.4.0
       with:
@@ -104,7 +125,20 @@ runs:
 
     - name: Install Claude Code
       shell: bash
-      run: npm install -g @anthropic-ai/claude-code@1.0.34
+      run: |
+        # Self-hosted runner対応: 徹底的なクリーンアップ
+        npm uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
+        
+        # 残存ファイルを手動削除（self-hosted runnerで必要）
+        NPM_GLOBAL_ROOT=$(npm root -g 2>/dev/null || echo "/usr/local/lib/node_modules")
+        rm -rf "$NPM_GLOBAL_ROOT/@anthropic-ai/claude-code" 2>/dev/null || true
+        rm -rf "$NPM_GLOBAL_ROOT/@anthropic-ai/.claude-code-"* 2>/dev/null || true
+        
+        # npmキャッシュクリア
+        npm cache clean --force 2>/dev/null || true
+        
+        # forceオプション付きでインストール
+        npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} --force
 
     - name: Run Claude Code Action
       shell: bash
@@ -137,6 +171,12 @@ runs:
         # Only set provider flags if explicitly true, since any value (including "false") is truthy
         CLAUDE_CODE_USE_BEDROCK: ${{ inputs.use_bedrock == 'true' && '1' || '' }}
         CLAUDE_CODE_USE_VERTEX: ${{ inputs.use_vertex == 'true' && '1' || '' }}
+        CLAUDE_CODE_USE_OAUTH: ${{ inputs.use_oauth == 'true' && '1' || '' }}
+
+        # OAuth configuration
+        CLAUDE_ACCESS_TOKEN: ${{ inputs.claude_access_token }}
+        CLAUDE_REFRESH_TOKEN: ${{ inputs.claude_refresh_token }}
+        CLAUDE_EXPIRES_AT: ${{ inputs.claude_expires_at }}
 
         # AWS configuration
         AWS_REGION: ${{ env.AWS_REGION }}
